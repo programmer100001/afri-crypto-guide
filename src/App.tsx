@@ -11,6 +11,7 @@ import BuyCryptoKenya from "./pages/BuyCryptoKenya";
 import WalletsSecurity from "./pages/WalletsSecurity";
 import ExchangeReviews from "./pages/ExchangeReviews";
 import LocalInsights from "./pages/LocalInsights";
+import CommunityHub from "./pages/CommunityHub";
 
 const queryClient = new QueryClient();
 
@@ -27,6 +28,7 @@ const App = () => (
           <Route path="/wallets-security" element={<WalletsSecurity />} />
           <Route path="/exchange-reviews" element={<ExchangeReviews />} />
           <Route path="/local-insights" element={<LocalInsights />} />
+          <Route path="/community-hub" element={<CommunityHub />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
