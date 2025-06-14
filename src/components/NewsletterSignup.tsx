@@ -1,8 +1,38 @@
 
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { useToast } from "@/hooks/use-toast";
 
 export const NewsletterSignup = () => {
+  const [email, setEmail] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const { toast } = useToast();
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!email) {
+      toast({
+        title: "Email required",
+        description: "Please enter your email address",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setIsLoading(true);
+    
+    // Simulate API call
+    setTimeout(() => {
+      toast({
+        title: "Successfully subscribed!",
+        description: "Welcome to Crypto Kenya! Check your email for your free starter guide.",
+      });
+      setEmail("");
+      setIsLoading(false);
+    }, 1000);
+  };
+
   return (
     <section className="py-20 px-4">
       <div className="container mx-auto">
@@ -16,16 +46,22 @@ export const NewsletterSignup = () => {
               Join 5,000+ Kenyan crypto enthusiasts.
             </p>
             
-            <div className="flex flex-col sm:flex-row gap-4 max-w-md mx-auto">
+            <form onSubmit={handleSubmit} className="flex flex-col sm:flex-row gap-4 max-w-md mx-auto">
               <Input 
                 type="email" 
                 placeholder="Enter your email address"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
                 className="bg-slate-800 border-slate-600 text-white placeholder:text-slate-400 flex-1"
               />
-              <Button className="bg-gradient-to-r from-orange-500 to-yellow-500 hover:from-orange-600 hover:to-yellow-600 px-8">
-                Subscribe
+              <Button 
+                type="submit"
+                disabled={isLoading}
+                className="bg-gradient-to-r from-orange-500 to-yellow-500 hover:from-orange-600 hover:to-yellow-600 px-8"
+              >
+                {isLoading ? "Subscribing..." : "Subscribe"}
               </Button>
-            </div>
+            </form>
             
             <p className="text-sm text-slate-400 mt-4">
               No spam. Unsubscribe anytime. We respect your privacy.
