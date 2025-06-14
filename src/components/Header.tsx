@@ -45,6 +45,7 @@ export const Header = () => {
   ];
 
   const communityItems = [
+    { label: "Community Hub", href: "/community-hub", description: "Advanced tools & community features" },
     { label: "Join Telegram Group", href: "#telegram", description: "Connect with fellow crypto enthusiasts" },
     { label: "Q&A Forum", href: "#forum", description: "Ask questions & get answers" },
     { label: "Submit a Question", href: "#submit-question", description: "Got a crypto question?" },
