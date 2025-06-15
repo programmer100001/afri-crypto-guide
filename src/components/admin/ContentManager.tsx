@@ -1,5 +1,5 @@
-
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { supabase, useSupabaseRealtime } from "@/hooks/useSupabaseRealtime";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -8,12 +8,8 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Plus, Edit, Trash2, Search } from "lucide-react";
 
 export const ContentManager = () => {
-  const [articles] = useState([
-    { id: 1, title: "How to Buy Bitcoin in Kenya", status: "Published", views: 1234, date: "2024-01-15" },
-    { id: 2, title: "Crypto Security Best Practices", status: "Draft", views: 0, date: "2024-01-14" },
-    { id: 3, title: "Understanding Blockchain Technology", status: "Published", views: 987, date: "2024-01-13" }
-  ]);
-
+  const [articles, setArticles] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
   const [showAddForm, setShowAddForm] = useState(false);
   const [newArticle, setNewArticle] = useState({
     title: "",
@@ -22,8 +18,44 @@ export const ContentManager = () => {
     tags: ""
   });
 
-  const handleAddArticle = () => {
-    console.log("Adding article:", newArticle);
+  // Fetch articles from Supabase on mount
+  useEffect(() => {
+    setLoading(true);
+    supabase
+      .from("articles")
+      .select("*")
+      .order("date", { ascending: false })
+      .then(({ data }) => {
+        setArticles(data || []);
+        setLoading(false);
+      });
+  }, []);
+
+  // Real-time updates
+  useSupabaseRealtime({
+    table: "articles",
+    onChange: (payload) => {
+      if (payload.eventType === "INSERT") {
+        setArticles((prev) => [payload.new, ...prev]);
+      } else if (payload.eventType === "DELETE") {
+        setArticles((prev) => prev.filter((a) => a.id !== payload.old.id));
+      } else if (payload.eventType === "UPDATE") {
+        setArticles((prev) =>
+          prev.map((a) => (a.id === payload.new.id ? payload.new : a))
+        );
+      }
+    }
+  });
+
+  const handleAddArticle = async () => {
+    await supabase.from("articles").insert([
+      {
+        ...newArticle,
+        status: "Published",
+        views: 0,
+        date: new Date().toISOString().split("T")[0],
+      },
+    ]);
     setShowAddForm(false);
     setNewArticle({ title: "", content: "", category: "", tags: "" });
   };

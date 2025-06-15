@@ -1,5 +1,5 @@
-
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { supabase, useSupabaseRealtime } from "@/hooks/useSupabaseRealtime";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -7,11 +7,35 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Search, Mail, Ban, UserCheck } from "lucide-react";
 
 export const UserManager = () => {
-  const [users] = useState([
-    { id: 1, name: "John Doe", email: "john@example.com", status: "Active", joined: "2024-01-15", role: "User" },
-    { id: 2, name: "Jane Smith", email: "jane@example.com", status: "Active", joined: "2024-01-14", role: "Moderator" },
-    { id: 3, name: "Bob Wilson", email: "bob@example.com", status: "Suspended", joined: "2024-01-13", role: "User" }
-  ]);
+  const [users, setUsers] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    setLoading(true);
+    supabase
+      .from("users")
+      .select("*")
+      .order("joined", { ascending: false })
+      .then(({ data }) => {
+        setUsers(data || []);
+        setLoading(false);
+      });
+  }, []);
+
+  useSupabaseRealtime({
+    table: "users",
+    onChange: (payload) => {
+      if (payload.eventType === "INSERT") {
+        setUsers((prev) => [payload.new, ...prev]);
+      } else if (payload.eventType === "DELETE") {
+        setUsers((prev) => prev.filter((u) => u.id !== payload.old.id));
+      } else if (payload.eventType === "UPDATE") {
+        setUsers((prev) =>
+          prev.map((u) => (u.id === payload.new.id ? payload.new : u))
+        );
+      }
+    }
+  });
 
   return (
     <div className="space-y-6">

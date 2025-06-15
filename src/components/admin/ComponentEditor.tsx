@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { supabase, useSupabaseRealtime } from "@/hooks/useSupabaseRealtime";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -32,14 +33,8 @@ interface EditingComponent {
 }
 
 export const ComponentEditor = ({ onComponentChange, editingItem, setEditingItem }: ComponentEditorProps) => {
-  const [components] = useState([
-    { id: 1, name: "Header Navigation", type: "Navigation", status: "Active", usedOn: "All Pages", lastModified: "2024-01-15" },
-    { id: 2, name: "Price Tracker", type: "Widget", status: "Active", usedOn: "Home, Tools", lastModified: "2024-01-14" },
-    { id: 3, name: "Crypto Calculator", type: "Tool", status: "Active", usedOn: "Tools", lastModified: "2024-01-13" },
-    { id: 4, name: "Scam Alert Board", type: "Widget", status: "Active", usedOn: "Home", lastModified: "2024-01-12" },
-    { id: 5, name: "Footer", type: "Navigation", status: "Active", usedOn: "All Pages", lastModified: "2024-01-11" }
-  ]);
-
+  const [components, setComponents] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
   const [showComponentEditor, setShowComponentEditor] = useState(false);
   const [editingComponent, setEditingComponent] = useState<EditingComponent>({
     name: "",
@@ -53,6 +48,33 @@ export const ComponentEditor = ({ onComponentChange, editingItem, setEditingItem
       backgroundColor: "#1e293b",
       textColor: "#ffffff",
       borderRadius: "8px"
+    }
+  });
+
+  useEffect(() => {
+    setLoading(true);
+    supabase
+      .from("components")
+      .select("*")
+      .order("lastModified", { ascending: false })
+      .then(({ data }) => {
+        setComponents(data || []);
+        setLoading(false);
+      });
+  }, []);
+
+  useSupabaseRealtime({
+    table: "components",
+    onChange: (payload) => {
+      if (payload.eventType === "INSERT") {
+        setComponents((prev) => [payload.new, ...prev]);
+      } else if (payload.eventType === "DELETE") {
+        setComponents((prev) => prev.filter((c) => c.id !== payload.old.id));
+      } else if (payload.eventType === "UPDATE") {
+        setComponents((prev) =>
+          prev.map((c) => (c.id === payload.new.id ? payload.new : c))
+        );
+      }
     }
   });
 

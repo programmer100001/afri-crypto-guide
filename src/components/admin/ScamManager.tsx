@@ -1,5 +1,5 @@
-
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { supabase, useSupabaseRealtime } from "@/hooks/useSupabaseRealtime";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -8,12 +8,8 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Plus, AlertTriangle, Eye, Trash2 } from "lucide-react";
 
 export const ScamManager = () => {
-  const [alerts] = useState([
-    { id: 1, title: "Fake Bitcoin Investment Scheme", type: "Investment Scam", severity: "High", date: "2024-01-15", status: "Active" },
-    { id: 2, title: "Phishing M-Pesa Links", type: "Phishing", severity: "Critical", date: "2024-01-14", status: "Active" },
-    { id: 3, title: "Fake Exchange Website", type: "Fake Platform", severity: "High", date: "2024-01-13", status: "Resolved" }
-  ]);
-
+  const [alerts, setAlerts] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
   const [showAddForm, setShowAddForm] = useState(false);
   const [newAlert, setNewAlert] = useState({
     title: "",
@@ -23,8 +19,41 @@ export const ScamManager = () => {
     evidence: ""
   });
 
-  const handleAddAlert = () => {
-    console.log("Adding scam alert:", newAlert);
+  useEffect(() => {
+    setLoading(true);
+    supabase
+      .from("scam_alerts")
+      .select("*")
+      .order("date", { ascending: false })
+      .then(({ data }) => {
+        setAlerts(data || []);
+        setLoading(false);
+      });
+  }, []);
+
+  useSupabaseRealtime({
+    table: "scam_alerts",
+    onChange: (payload) => {
+      if (payload.eventType === "INSERT") {
+        setAlerts((prev) => [payload.new, ...prev]);
+      } else if (payload.eventType === "DELETE") {
+        setAlerts((prev) => prev.filter((a) => a.id !== payload.old.id));
+      } else if (payload.eventType === "UPDATE") {
+        setAlerts((prev) =>
+          prev.map((a) => (a.id === payload.new.id ? payload.new : a))
+        );
+      }
+    }
+  });
+
+  const handleAddAlert = async () => {
+    await supabase.from("scam_alerts").insert([
+      {
+        ...newAlert,
+        status: "Active",
+        date: new Date().toISOString().split("T")[0]
+      }
+    ]);
     setShowAddForm(false);
     setNewAlert({ title: "", description: "", type: "", severity: "", evidence: "" });
   };
