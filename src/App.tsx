@@ -1,4 +1,3 @@
-
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -13,29 +12,12 @@ import ExchangeReviews from "./pages/ExchangeReviews";
 import LocalInsights from "./pages/LocalInsights";
 import CommunityHub from "./pages/CommunityHub";
 import Admin from "./pages/Admin";
-import { Navigate } from "react-router-dom";
-import { SessionContextProvider } from "@supabase/auth-helpers-react";
-import Login from "./pages/Login";
-import { useSupabaseAuth } from "./hooks/useSupabaseAuth";
+import { SuperEditProvider } from "@/components/admin/SuperEditContext";
 
 const queryClient = new QueryClient();
 
-// No need to manually initialize supabaseClient, Lovable injects it
-
-const ProtectedAdminRoute = ({ children }: { children: JSX.Element }) => {
-  const { isAuthenticated, role } = useSupabaseAuth();
-  if (!isAuthenticated) {
-    return <Navigate to="/login" replace />;
-  }
-  // Only allow users with role "admin"
-  if (role !== "admin") {
-    return <Navigate to="/" replace />;
-  }
-  return children;
-};
-
 const App = () => (
-  <SessionContextProvider>
+  <SuperEditProvider>
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>
         <Toaster />
@@ -49,23 +31,14 @@ const App = () => (
             <Route path="/exchange-reviews" element={<ExchangeReviews />} />
             <Route path="/local-insights" element={<LocalInsights />} />
             <Route path="/community-hub" element={<CommunityHub />} />
-            <Route
-              path="/admin"
-              element={
-                <ProtectedAdminRoute>
-                  <Admin />
-                </ProtectedAdminRoute>
-              }
-            />
-            <Route path="/login" element={<Login />} />
+            <Route path="/admin" element={<Admin />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>
       </TooltipProvider>
     </QueryClientProvider>
-  </SessionContextProvider>
+  </SuperEditProvider>
 );
 
 export default App;
-

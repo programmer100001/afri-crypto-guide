@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -11,12 +10,15 @@ import { ContentEditor } from "./ContentEditor";
 import { PageEditor } from "./PageEditor";
 import { ComponentEditor } from "./ComponentEditor";
 import { VersionControl } from "./VersionControl";
+import { useSuperEdit } from "./SuperEditContext";
+import { WandSparkles } from "lucide-react";
 
 export const EditMode = () => {
   const [activeTab, setActiveTab] = useState("content");
   const [editingItem, setEditingItem] = useState(null);
   const [isDirty, setIsDirty] = useState(false);
   const [autoSaveEnabled, setAutoSaveEnabled] = useState(true);
+  const { superEdit, setSuperEdit } = useSuperEdit();
 
   // Auto-save functionality
   useEffect(() => {
@@ -54,6 +56,15 @@ export const EditMode = () => {
           <p className="text-slate-400 mt-1">Manage and edit your website content</p>
         </div>
         <div className="flex items-center gap-2">
+          <Button
+            variant={superEdit ? "default" : "outline"}
+            onClick={() => setSuperEdit(!superEdit)}
+            className={superEdit ? "bg-orange-500 text-white" : ""}
+            title="Super Edit: Edit live site sections"
+          >
+            <WandSparkles className="h-4 w-4 mr-2" />
+            {superEdit ? "Super Edit: ON" : "Super Edit"}
+          </Button>
           {isDirty && (
             <Badge variant="outline" className="text-yellow-500 border-yellow-500">
               <Clock className="h-3 w-3 mr-1" />

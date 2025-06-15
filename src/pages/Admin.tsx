@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -9,19 +10,8 @@ import { ScamManager } from "@/components/admin/ScamManager";
 import { AnalyticsDashboard } from "@/components/admin/AnalyticsDashboard";
 import { SiteSettings } from "@/components/admin/SiteSettings";
 import { EditMode } from "@/components/admin/EditMode";
-import { useSupabaseAuth } from "../hooks/useSupabaseAuth";
-import { useNavigate } from "react-router-dom";
 
 const Admin = () => {
-  const { user, isAuthenticated, role } = useSupabaseAuth();
-  const navigate = useNavigate();
-
-  // Redirect if not authenticated or not admin
-  if (!isAuthenticated || role !== "admin") {
-    navigate("/login", { replace: true });
-    return null;
-  }
-
   const [activeTab, setActiveTab] = useState("dashboard");
 
   return (
