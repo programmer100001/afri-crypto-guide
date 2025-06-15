@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -13,6 +12,25 @@ interface ComponentEditorProps {
   setEditingItem: (item: any) => void;
 }
 
+interface ComponentSettings {
+  autoRefresh: boolean;
+  refreshInterval: number;
+  showAnimation: boolean;
+}
+
+interface ComponentStyles {
+  backgroundColor: string;
+  textColor: string;
+  borderRadius: string;
+}
+
+interface EditingComponent {
+  name: string;
+  type: string;
+  settings: ComponentSettings;
+  styles: ComponentStyles;
+}
+
 export const ComponentEditor = ({ onComponentChange, editingItem, setEditingItem }: ComponentEditorProps) => {
   const [components] = useState([
     { id: 1, name: "Header Navigation", type: "Navigation", status: "Active", usedOn: "All Pages", lastModified: "2024-01-15" },
@@ -23,11 +41,19 @@ export const ComponentEditor = ({ onComponentChange, editingItem, setEditingItem
   ]);
 
   const [showComponentEditor, setShowComponentEditor] = useState(false);
-  const [editingComponent, setEditingComponent] = useState({
+  const [editingComponent, setEditingComponent] = useState<EditingComponent>({
     name: "",
     type: "",
-    settings: {},
-    styles: {}
+    settings: {
+      autoRefresh: true,
+      refreshInterval: 30,
+      showAnimation: true
+    },
+    styles: {
+      backgroundColor: "#1e293b",
+      textColor: "#ffffff",
+      borderRadius: "8px"
+    }
   });
 
   const handleEditComponent = (component: any) => {
