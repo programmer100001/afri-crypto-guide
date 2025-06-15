@@ -1,9 +1,10 @@
+
 import React from "react";
 import { Header } from "@/components/Header";
 import { Hero } from "@/components/Hero";
 import { Features } from "@/components/Features";
-import { HowItWorks } from "@/components/HowItWorks";
-import { ScamAlert } from "@/components/ScamAlert";
+// Removed: import { HowItWorks } from "@/components/HowItWorks";
+import { ScamAlerts } from "@/components/ScamAlerts";
 import { Footer } from "@/components/Footer";
 import { useSuperEdit } from "@/components/admin/SuperEditContext";
 import { SuperEditModal } from "@/components/admin/SuperEditModal";
@@ -48,11 +49,12 @@ const Index = () => {
       <Header />
       <Hero />
       <Features />
-      <HowItWorks />
-      <ScamAlert />
+      {/* Removed <HowItWorks /> as it does not exist */}
+      <ScamAlerts />
       <Footer />
     </div>
   );
 };
 
 export default Index;
+
