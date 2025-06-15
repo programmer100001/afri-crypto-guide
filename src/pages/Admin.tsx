@@ -3,12 +3,13 @@ import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
-import { Users, FileText, AlertTriangle, BarChart3, Settings, Shield } from "lucide-react";
+import { Users, FileText, AlertTriangle, BarChart3, Settings, Shield, Edit } from "lucide-react";
 import { ContentManager } from "@/components/admin/ContentManager";
 import { UserManager } from "@/components/admin/UserManager";
 import { ScamManager } from "@/components/admin/ScamManager";
 import { AnalyticsDashboard } from "@/components/admin/AnalyticsDashboard";
 import { SiteSettings } from "@/components/admin/SiteSettings";
+import { EditMode } from "@/components/admin/EditMode";
 
 const Admin = () => {
   const [activeTab, setActiveTab] = useState("dashboard");
@@ -29,10 +30,14 @@ const Admin = () => {
 
       <div className="container mx-auto px-4 py-8">
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-8">
-          <TabsList className="grid w-full grid-cols-6 bg-slate-800">
+          <TabsList className="grid w-full grid-cols-7 bg-slate-800">
             <TabsTrigger value="dashboard" className="flex items-center gap-2">
               <BarChart3 className="h-4 w-4" />
               Dashboard
+            </TabsTrigger>
+            <TabsTrigger value="edit" className="flex items-center gap-2">
+              <Edit className="h-4 w-4" />
+              Edit Mode
             </TabsTrigger>
             <TabsTrigger value="content" className="flex items-center gap-2">
               <FileText className="h-4 w-4" />
@@ -58,6 +63,10 @@ const Admin = () => {
 
           <TabsContent value="dashboard">
             <AnalyticsDashboard />
+          </TabsContent>
+
+          <TabsContent value="edit">
+            <EditMode />
           </TabsContent>
 
           <TabsContent value="content">
