@@ -1,4 +1,3 @@
-
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -12,6 +11,7 @@ import WalletsSecurity from "./pages/WalletsSecurity";
 import ExchangeReviews from "./pages/ExchangeReviews";
 import LocalInsights from "./pages/LocalInsights";
 import CommunityHub from "./pages/CommunityHub";
+import Admin from "./pages/Admin";
 
 const queryClient = new QueryClient();
 
@@ -29,6 +29,7 @@ const App = () => (
           <Route path="/exchange-reviews" element={<ExchangeReviews />} />
           <Route path="/local-insights" element={<LocalInsights />} />
           <Route path="/community-hub" element={<CommunityHub />} />
+          <Route path="/admin" element={<Admin />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
