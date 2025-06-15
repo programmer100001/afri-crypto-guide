@@ -1,3 +1,4 @@
+
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -12,17 +13,14 @@ import ExchangeReviews from "./pages/ExchangeReviews";
 import LocalInsights from "./pages/LocalInsights";
 import CommunityHub from "./pages/CommunityHub";
 import Admin from "./pages/Admin";
-import { createBrowserRouter, Navigate } from "react-router-dom";
+import { Navigate } from "react-router-dom";
 import { SessionContextProvider } from "@supabase/auth-helpers-react";
-import { createClient } from "@supabase/supabase-js";
 import Login from "./pages/Login";
 import { useSupabaseAuth } from "./hooks/useSupabaseAuth";
 
 const queryClient = new QueryClient();
 
-const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
-const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
-const supabase = createClient(supabaseUrl, supabaseAnonKey);
+// No need to manually initialize supabaseClient, Lovable injects it
 
 const ProtectedAdminRoute = ({ children }: { children: JSX.Element }) => {
   const { isAuthenticated, role } = useSupabaseAuth();
@@ -37,7 +35,7 @@ const ProtectedAdminRoute = ({ children }: { children: JSX.Element }) => {
 };
 
 const App = () => (
-  <SessionContextProvider supabaseClient={supabase}>
+  <SessionContextProvider>
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>
         <Toaster />
@@ -70,3 +68,4 @@ const App = () => (
 );
 
 export default App;
+
