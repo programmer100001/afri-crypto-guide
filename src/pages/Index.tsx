@@ -3,8 +3,8 @@ import React from "react";
 import { Header } from "@/components/Header";
 import { Hero } from "@/components/Hero";
 import { Features } from "@/components/Features";
-// Removed: import { HowItWorks } from "@/components/HowItWorks";
-import { ScamAlerts } from "@/components/ScamAlerts";
+// import { HowItWorks } from "@/components/HowItWorks"; // removed, does not exist
+import { ScamAlerts } from "@/components/ScamAlerts"; // fixed import
 import { Footer } from "@/components/Footer";
 import { useSuperEdit } from "@/components/admin/SuperEditContext";
 import { SuperEditModal } from "@/components/admin/SuperEditModal";
@@ -49,7 +49,7 @@ const Index = () => {
       <Header />
       <Hero />
       <Features />
-      {/* Removed <HowItWorks /> as it does not exist */}
+      {/* <HowItWorks /> removed, file doesn't exist */}
       <ScamAlerts />
       <Footer />
     </div>
@@ -57,4 +57,3 @@ const Index = () => {
 };
 
 export default Index;
-
