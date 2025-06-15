@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { useIsMobile } from "@/hooks/use-mobile";
@@ -10,7 +9,7 @@ import {
   NavigationMenuList,
   NavigationMenuTrigger,
 } from "@/components/ui/navigation-menu";
-import { ChevronDown } from "lucide-react";
+import { ChevronDown, Settings } from "lucide-react";
 
 export const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -140,6 +139,16 @@ export const Header = () => {
                     </NavigationMenuTrigger>
                     {renderDropdownContent(aboutItems)}
                   </NavigationMenuItem>
+
+                  <NavigationMenuItem>
+                    <a 
+                      href="/admin" 
+                      className="text-slate-300 hover:text-orange-400 transition-all duration-200 px-3 py-2 rounded-md hover:bg-white/10 hover:scale-105 flex items-center gap-1"
+                    >
+                      <Settings className="h-4 w-4" />
+                      Admin
+                    </a>
+                  </NavigationMenuItem>
                 </NavigationMenuList>
               </NavigationMenu>
 
@@ -237,6 +246,15 @@ export const Header = () => {
                   ))}
                 </div>
               </div>
+
+              <a 
+                href="/admin" 
+                className="text-slate-300 hover:text-orange-400 transition-all duration-200 hover:bg-white/10 rounded-md px-3 py-2 flex items-center gap-2"
+                onClick={() => setIsMenuOpen(false)}
+              >
+                <Settings className="h-4 w-4" />
+                Admin Panel
+              </a>
 
               <Button className="bg-gradient-to-r from-orange-500 to-yellow-500 hover:from-orange-600 hover:to-yellow-600 mt-4 transition-all duration-200 hover:scale-105 hover:shadow-lg">
                 Start Here
