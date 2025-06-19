@@ -24,6 +24,9 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
+// Google OAuth configuration
+const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID || '';
+
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -35,12 +38,24 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       setUser(JSON.parse(savedUser));
     }
     setIsLoading(false);
+
+    // Load Google Sign-In script
+    if (GOOGLE_CLIENT_ID && !window.google) {
+      const script = document.createElement('script');
+      script.src = 'https://accounts.google.com/gsi/client';
+      script.async = true;
+      script.defer = true;
+      document.head.appendChild(script);
+    }
   }, []);
 
   const login = async (email: string, password: string) => {
     setIsLoading(true);
     try {
-      // Mock authentication - replace with real auth when Supabase is connected
+      // In a real application, this would make an API call to your authentication endpoint
+      // For now, we'll simulate it with a timeout
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      
       const mockUser: User = {
         id: '1',
         email,
@@ -57,7 +72,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       console.log('User logged in:', mockUser);
     } catch (error) {
       console.error('Login failed:', error);
-      throw error;
+      throw new Error('Invalid credentials');
     } finally {
       setIsLoading(false);
     }
@@ -66,22 +81,61 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const loginWithGoogle = async () => {
     setIsLoading(true);
     try {
-      // Mock Google login - replace with real Google OAuth when Supabase is connected
-      const mockUser: User = {
-        id: 'google-' + Date.now(),
-        email: 'user@gmail.com',
-        name: 'Google User',
-        role: 'user',
-        avatar: 'https://via.placeholder.com/40',
-        preferences: {
-          theme: 'dark',
-          notifications: true
-        }
-      };
-      
-      setUser(mockUser);
-      localStorage.setItem('crypto-edu-user', JSON.stringify(mockUser));
-      console.log('Google login successful:', mockUser);
+      if (GOOGLE_CLIENT_ID && window.google) {
+        // Real Google Sign-In implementation
+        return new Promise<void>((resolve, reject) => {
+          window.google.accounts.id.initialize({
+            client_id: GOOGLE_CLIENT_ID,
+            callback: (response: any) => {
+              try {
+                // Decode the JWT token to get user info
+                const payload = JSON.parse(atob(response.credential.split('.')[1]));
+                
+                const googleUser: User = {
+                  id: payload.sub,
+                  email: payload.email,
+                  name: payload.name,
+                  role: 'user',
+                  avatar: payload.picture,
+                  preferences: {
+                    theme: 'dark',
+                    notifications: true
+                  }
+                };
+                
+                setUser(googleUser);
+                localStorage.setItem('crypto-edu-user', JSON.stringify(googleUser));
+                console.log('Google login successful:', googleUser);
+                setIsLoading(false);
+                resolve();
+              } catch (error) {
+                console.error('Google login failed:', error);
+                setIsLoading(false);
+                reject(error);
+              }
+            }
+          });
+          
+          window.google.accounts.id.prompt();
+        });
+      } else {
+        // Fallback for development/demo
+        const mockUser: User = {
+          id: 'google-' + Date.now(),
+          email: 'user@gmail.com',
+          name: 'Google User',
+          role: 'user',
+          avatar: 'https://via.placeholder.com/40',
+          preferences: {
+            theme: 'dark',
+            notifications: true
+          }
+        };
+        
+        setUser(mockUser);
+        localStorage.setItem('crypto-edu-user', JSON.stringify(mockUser));
+        console.log('Google login successful (mock):', mockUser);
+      }
     } catch (error) {
       console.error('Google login failed:', error);
       throw error;
@@ -125,3 +179,10 @@ export const useAuth = () => {
   }
   return context;
 };
+
+// Extend window object for Google Sign-In
+declare global {
+  interface Window {
+    google: any;
+  }
+}

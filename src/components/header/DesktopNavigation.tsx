@@ -56,6 +56,20 @@ export const DesktopNavigation = () => {
   const [showLoginModal, setShowLoginModal] = useState(false);
   const { user, logout } = useAuth();
 
+  const handleStartHere = () => {
+    if (user) {
+      // User is logged in, redirect to their preferred starting point
+      window.location.href = '/crypto-101';
+    } else {
+      // User not logged in, show login modal
+      setShowLoginModal(true);
+    }
+  };
+
+  const handleProfileClick = () => {
+    window.location.href = '/profile';
+  };
+
   return (
     <div className="flex items-center space-x-6">
       <NavigationMenu>
@@ -106,11 +120,11 @@ export const DesktopNavigation = () => {
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent className="bg-slate-900 border-slate-700">
-              <DropdownMenuItem className="text-white hover:bg-slate-800">
+              <DropdownMenuItem onClick={handleProfileClick} className="text-white hover:bg-slate-800 cursor-pointer">
                 <User className="mr-2 h-4 w-4" />
                 Profile
               </DropdownMenuItem>
-              <DropdownMenuItem onClick={logout} className="text-white hover:bg-slate-800">
+              <DropdownMenuItem onClick={logout} className="text-white hover:bg-slate-800 cursor-pointer">
                 <LogOut className="mr-2 h-4 w-4" />
                 Sign Out
               </DropdownMenuItem>
@@ -126,8 +140,11 @@ export const DesktopNavigation = () => {
           </Button>
         )}
         
-        <Button className="bg-gradient-to-r from-orange-500 to-yellow-500 hover:from-orange-600 hover:to-yellow-600 transition-all duration-200 hover:scale-105 hover:shadow-lg">
-          Start Here
+        <Button 
+          onClick={handleStartHere}
+          className="bg-gradient-to-r from-orange-500 to-yellow-500 hover:from-orange-600 hover:to-yellow-600 transition-all duration-200 hover:scale-105 hover:shadow-lg"
+        >
+          {user ? 'Continue Learning' : 'Start Here'}
         </Button>
       </div>
       
