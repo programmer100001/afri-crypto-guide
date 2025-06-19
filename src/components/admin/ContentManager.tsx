@@ -21,6 +21,20 @@ export const ContentManager = () => {
   // Fetch articles from Supabase on mount
   useEffect(() => {
     setLoading(true);
+    
+    // If Supabase is not configured, use mock data
+    if (!supabase) {
+      console.warn("Supabase not configured - using mock data");
+      const mockArticles = [
+        { id: 1, title: "How to Buy Bitcoin in Kenya", status: "Published", views: 1250, date: "2024-01-15" },
+        { id: 2, title: "Crypto Security Best Practices", status: "Draft", views: 0, date: "2024-01-14" },
+        { id: 3, title: "Understanding DeFi", status: "Published", views: 890, date: "2024-01-13" }
+      ];
+      setArticles(mockArticles);
+      setLoading(false);
+      return;
+    }
+
     supabase
       .from("articles")
       .select("*")
@@ -48,6 +62,11 @@ export const ContentManager = () => {
   });
 
   const handleAddArticle = async () => {
+    if (!supabase) {
+      alert("Supabase not configured - cannot save articles");
+      return;
+    }
+
     await supabase.from("articles").insert([
       {
         ...newArticle,
@@ -62,6 +81,14 @@ export const ContentManager = () => {
 
   return (
     <div className="space-y-6">
+      {!supabase && (
+        <div className="bg-yellow-900/20 border border-yellow-500/30 rounded-lg p-4">
+          <p className="text-yellow-400 text-sm">
+            ⚠️ Supabase not configured - displaying mock data. Connect to Supabase for real functionality.
+          </p>
+        </div>
+      )}
+      
       <div className="flex justify-between items-center">
         <h2 className="text-2xl font-bold text-orange-500">Content Management</h2>
         <Button onClick={() => setShowAddForm(true)} className="bg-orange-500 hover:bg-orange-600">

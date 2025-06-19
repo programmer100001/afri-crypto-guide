@@ -12,6 +12,20 @@ export const UserManager = () => {
 
   useEffect(() => {
     setLoading(true);
+    
+    // If Supabase is not configured, use mock data
+    if (!supabase) {
+      console.warn("Supabase not configured - using mock data");
+      const mockUsers = [
+        { id: 1, name: "John Doe", email: "john@example.com", role: "User", status: "Active", joined: "2024-01-15" },
+        { id: 2, name: "Jane Smith", email: "jane@example.com", role: "Admin", status: "Active", joined: "2024-01-14" },
+        { id: 3, name: "Bob Wilson", email: "bob@example.com", role: "User", status: "Suspended", joined: "2024-01-13" }
+      ];
+      setUsers(mockUsers);
+      setLoading(false);
+      return;
+    }
+
     supabase
       .from("users")
       .select("*")
@@ -39,6 +53,14 @@ export const UserManager = () => {
 
   return (
     <div className="space-y-6">
+      {!supabase && (
+        <div className="bg-yellow-900/20 border border-yellow-500/30 rounded-lg p-4">
+          <p className="text-yellow-400 text-sm">
+            ⚠️ Supabase not configured - displaying mock data. Connect to Supabase for real functionality.
+          </p>
+        </div>
+      )}
+      
       <div className="flex justify-between items-center">
         <h2 className="text-2xl font-bold text-orange-500">User Management</h2>
         <div className="flex gap-2">
