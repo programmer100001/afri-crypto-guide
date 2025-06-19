@@ -1,4 +1,5 @@
 
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
   NavigationMenu,
@@ -7,8 +8,17 @@ import {
   NavigationMenuList,
   NavigationMenuTrigger,
 } from "@/components/ui/navigation-menu";
-import { Settings } from "lucide-react";
+import { Settings, User, LogOut } from "lucide-react";
 import { navigationData } from "./navigationData";
+import { useAuth } from "@/hooks/useAuth";
+import { LoginModal } from "@/components/auth/LoginModal";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 const menuKeys = [
   { key: "learnCryptoItems", label: "Learn Crypto" },
@@ -43,6 +53,9 @@ const renderDropdownContent = (
 );
 
 export const DesktopNavigation = () => {
+  const [showLoginModal, setShowLoginModal] = useState(false);
+  const { user, logout } = useAuth();
+
   return (
     <div className="flex items-center space-x-6">
       <NavigationMenu>
@@ -64,20 +77,61 @@ export const DesktopNavigation = () => {
               </NavigationMenuItem>
             );
           })}
-          <NavigationMenuItem>
-            <a 
-              href="/admin" 
-              className="text-slate-300 hover:text-orange-400 transition-all duration-200 px-3 py-2 rounded-md hover:bg-white/10 hover:scale-105 flex items-center gap-1"
-            >
-              <Settings className="h-4 w-4" />
-              Admin
-            </a>
-          </NavigationMenuItem>
+          {user?.role === 'admin' && (
+            <NavigationMenuItem>
+              <a 
+                href="/admin" 
+                className="text-slate-300 hover:text-orange-400 transition-all duration-200 px-3 py-2 rounded-md hover:bg-white/10 hover:scale-105 flex items-center gap-1"
+              >
+                <Settings className="h-4 w-4" />
+                Admin
+              </a>
+            </NavigationMenuItem>
+          )}
         </NavigationMenuList>
       </NavigationMenu>
-      <Button className="bg-gradient-to-r from-orange-500 to-yellow-500 hover:from-orange-600 hover:to-yellow-600 transition-all duration-200 hover:scale-105 hover:shadow-lg">
-        Start Here
-      </Button>
+      
+      <div className="flex items-center gap-3">
+        {user ? (
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" className="flex items-center gap-2 hover:bg-white/10">
+                <Avatar className="h-8 w-8">
+                  <AvatarImage src={user.avatar} />
+                  <AvatarFallback className="bg-orange-500 text-white text-sm">
+                    {user.name.charAt(0).toUpperCase()}
+                  </AvatarFallback>
+                </Avatar>
+                <span className="text-white">{user.name}</span>
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent className="bg-slate-900 border-slate-700">
+              <DropdownMenuItem className="text-white hover:bg-slate-800">
+                <User className="mr-2 h-4 w-4" />
+                Profile
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={logout} className="text-white hover:bg-slate-800">
+                <LogOut className="mr-2 h-4 w-4" />
+                Sign Out
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        ) : (
+          <Button 
+            onClick={() => setShowLoginModal(true)}
+            variant="outline"
+            className="border-orange-500 text-orange-500 hover:bg-orange-500 hover:text-white"
+          >
+            Sign In
+          </Button>
+        )}
+        
+        <Button className="bg-gradient-to-r from-orange-500 to-yellow-500 hover:from-orange-600 hover:to-yellow-600 transition-all duration-200 hover:scale-105 hover:shadow-lg">
+          Start Here
+        </Button>
+      </div>
+      
+      <LoginModal isOpen={showLoginModal} onClose={() => setShowLoginModal(false)} />
     </div>
   );
 };
